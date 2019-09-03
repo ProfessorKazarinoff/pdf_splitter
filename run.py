@@ -8,16 +8,16 @@ A GUI that pulls out specific pdf pages into another pdf document
 """
 
 from pathlib import Path
-from PyPDF2 import PdfFileReader, PdfFileWriter
-
+from PyPDF4 import PdfFileReader, PdfFileWriter
+from gooey import Gooey, GooeyParser
 
 def pdf_splitter(in_path: Path, out_path: Path, page_list: list):
     """
     A function to split a pdf into different pages
     """
-    pdf = PdfFileReader(in_path)
+    f = open(in_path, 'rb')
+    pdf = PdfFileReader(f)
     pdf_writer = PdfFileWriter
-    #page_list = [1, 4, 5]
     pdf_writer = PdfFileWriter()
     for page in page_list:
         pdf_writer.addPage(pdf.getPage(page-1))
@@ -32,20 +32,24 @@ def string_to_list(in_str):
     out_lst = [int(s.strip()) for s in in_str.split(",")]
     return out_lst
 
-
+@Gooey()
 def main():
-    print("Relative to the cwd, what is the .pdf input filename?")
-    f_name_in = input("Enter input pdf file name: ")
-    print("Relative to the cwd, what is the .pdf output filename?")
-    f_name_out = input("Enter output pdf file name: ")
-    print("Which pages do you want to extract into a new file?")
-    list_str = input("Enter list of pages seperated with a comma: ")
+    desc = "A Python Gooey App to extract pdf pages"
+    pdf_select_help_message = "Select a .pdf file to pull pages out of"
+    parser = GooeyParser(description=desc)
+    parser.add_argument(
+        "PDF_to_extract_from", help=pdf_select_help_message, widget="FileChooser")
+    parser.add_argument("Output_Directory", help="Directory to save output", widget="DirChooser")
+    parser.add_argument("Output_File", help="Output file name", widget="TextField")
+    parser.add_argument("Page_List", help="List of pagex to extract", widget="TextField")
+    args = parser.parse_args()
 
-    cwd = Path.cwd()
-    f_in = Path(f_name_in)
-    f_out = Path(cwd, f_name_out)
+    outfile_Path = Path(args.Output_Directory, Path(args.Output_File))
+    in_Path = Path(args.PDF_to_extract_from)
+    list_str = str(args.Page_List)
+
     p_list = string_to_list(list_str)
-    pdf_splitter(f_name_in, f_out, p_list)
+    pdf_splitter(in_Path, outfile_Path, p_list)
 
 
 if __name__ == "__main__":
