@@ -183,3 +183,12 @@ fabric.properties
 
 # Any PDF files used for testing
 .pdf
+*.pdf
+.PDF
+*.PDF
+
+# Any word files
+.doc
+.docx
+*.doc
+*.docx

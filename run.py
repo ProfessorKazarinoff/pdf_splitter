@@ -17,10 +17,10 @@ def pdf_splitter(in_path: Path, out_path: Path, page_list: list):
     """
     pdf = PdfFileReader(in_path)
     pdf_writer = PdfFileWriter
-    page_list = [1, 4, 5]
+    #page_list = [1, 4, 5]
     pdf_writer = PdfFileWriter()
     for page in page_list:
-        pdf_writer.addPage(pdf.getPage(page))
+        pdf_writer.addPage(pdf.getPage(page-1))
     with open(out_path, "wb") as out:
         pdf_writer.write(out)
 
